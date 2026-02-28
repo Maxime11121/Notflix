@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotFlix Player</title>
+    <link rel="stylesheet" href="css/player.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Player Container -->
+    <div class="player-container" id="playerContainer">
+        
+        <!-- Video Frame (The actual player) -->
+        <iframe id="videoFrame" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Loading stream...</p>
+            <p class="loading-source" id="loadingSource"></p>
+            <div class="loading-tips">
+                <p>💡 If loading takes too long, try another source</p>
+            </div>
+        </div>
+        
+        <!-- Top Bar (Always accessible) -->
+        <div class="top-bar" id="topBar">
+            <button class="control-btn back-btn" onclick="goBack()" title="Go Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            
+            <div class="video-info">
+                <h3 id="videoTitle">Loading...</h3>
+                <p id="videoMeta"></p>
+            </div>
+            
+            <div class="top-right-controls">
+                <button class="control-btn" onclick="toggleBookmarks()" title="Bookmarks">
+                    <i class="fas fa-bookmark"></i>
+                </button>
+                <button class="control-btn" onclick="createWatchParty()" title="Watch Party">
+                    <i class="fas fa-users"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar (Source selector & controls) -->
+        <div class="bottom-bar" id="bottomBar">
+            <div class="controls-row">
+                <div class="controls-left">
+                    <!-- Source Selector (Most Important) -->
+                    <div class="source-selector">
+                        <button class="source-btn" onclick="toggleSourceMenu()">
+                            <i class="fas fa-server"></i>
+                            <span id="currentSource">Source 1</span>
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                        <div class="source-menu" id="sourceMenu">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Source Navigation -->
+                    <button class="control-btn" onclick="previousSource()" title="Previous Source">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="source-counter" id="sourceCounter">1/25</span>
+                    <button class="control-btn" onclick="nextSource()" title="Next Source">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="controls-right">
+                    <!-- Subtitle Toggle -->
+                    <button class="control-btn" onclick="toggleSubtitleMenu()" title="Subtitles">
+                        <i class="fas fa-closed-captioning"></i>
+                    </button>
+                    
+                    <!-- Next Episode (TV Shows) -->
+                    <button class="control-btn" id="nextEpisodeBtn" onclick="playNextEpisode()" title="Next Episode" style="display: none;">
+                        <i class="fas fa-forward-step"></i>
+                    </button>
+                    
+                    <!-- Fullscreen -->
+                    <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                        <i class="fas fa-expand" id="fullscreenIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Keyboard Shortcuts Hint -->
+        <div class="shortcuts-hint" id="shortcutsHint">
+            Press <kbd>S</kbd> for sources • <kbd>F</kbd> fullscreen • <kbd>←</kbd><kbd>→</kbd> change source • <kbd>ESC</kbd> go back
+        </div>
+        
+        <!-- Source Failed Message -->
+        <div class="source-failed" id="sourceFailed">
+            <div class="failed-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>This source isn't working</p>
+                <button onclick="tryNextSource(player.currentSourceIndex)">Try Next Source</button>
+            </div>
+        </div>
+        
+        <!-- Next Episode Card -->
+        <div class="next-episode-card" id="nextEpisode">
+            <div class="next-episode-content">
+                <div class="next-info">
+                    <span class="next-label">Up Next</span>
+                    <h4 id="nextEpisodeTitle">Next Episode</h4>
+                    <p id="nextEpisodeCountdown">Starting in <span>10</span>s</p>
+                </div>
+                <div class="next-actions">
+                    <button class="btn-play-next" onclick="playNextEpisode()">
+                        <i class="fas fa-play"></i> Play Now
+                    </button>
+                    <button class="btn-cancel-next" onclick="cancelNext()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Subtitle Display -->
+        <div class="subtitle-display" id="subtitleDisplay"></div>
+        
+        <!-- Subtitle Menu (Side Panel) -->
+        <div class="subtitle-menu" id="subtitleMenu">
+            <div class="panel-header">
+                <h3>Subtitles</h3>
+                <button onclick="toggleSubtitleMenu()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-body">
+                <div class="subtitle-options">
+                    <div class="menu-item active" data-lang="off" onclick="setSubtitle('off')">
+                        <i class="fas fa-check"></i> Off
+                    </div>
+                    <div class="menu-item" data-lang="en" onclick="setSubtitle('en')">
+                        <i class="fas fa-check"></i> English
+                    </div>
+                    <div class="menu-item" data-lang="es" onclick="setSubtitle('es')">
+                        <i class="fas fa-check"></i> Español
+                    </div>
+                    <div class="menu-item" data-lang="fr" onclick="setSubtitle('fr')">
+                        <i class="fas fa-check"></i> Français
+                    </div>
+                    <div class="menu-item" data-lang="de" onclick="setSubtitle('de')">
+                        <i class="fas fa-check"></i> Deutsch
+                    </div>
+                    <div class="menu-item" data-lang="pt" onclick="setSubtitle('pt')">
+                        <i class="fas fa-check"></i> Português
+                    </div>
+                    <div class="menu-item" data-lang="ar" onclick="setSubtitle('ar')">
+                        <i class="fas fa-check"></i> العربية
+                    </div>
+                </div>
+                <p class="subtitle-note">
+                    <i class="fas fa-info-circle"></i>
+                    Most sources have built-in subtitle options in their player
+                </p>
+            </div>
+        </div>
+        
+        <!-- Bookmarks Panel (Side Panel) -->
+        <div class="bookmarks-panel" id="bookmarksPanel">
+            <div class="panel-header">
+                <h3>Bookmarks</h3>
+                <button onclick="toggleBookmarks()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="bookmarks-list" id="bookmarksList">
+                <!-- Populated by JS -->
+            </div>
+            <button class="btn-add-bookmark" onclick="addBookmark()">
+                <i class="fas fa-plus"></i> Add Bookmark
+            </button>
+        </div>
+        
+        <!-- Watch Party Panel (Side Panel) -->
+        <div class="watch-party-panel" id="watchPartyPanel">
+            <div class="panel-header">
+                <h3>Watch Party</h3>
+                <button onclick="closeWatchParty()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="party-info">
+                <p>Share this code with friends:</p>
+                <div class="party-code">
+                    <input type="text" id="partyCode" readonly>
+                    <button onclick="copyPartyCode()"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+            <div class="party-members">
+                <h4>Members (<span id="memberCount">1</span>)</h4>
+                <div id="membersList"></div>
+            </div>
+            <div class="party-chat">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type a message...">
+                    <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="js/player.js"></script>
+</body>
+</html>

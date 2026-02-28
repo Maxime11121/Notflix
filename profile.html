@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - NotFlix Ultra</title>
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="logo">NOTFLIX</a>
+        </div>
+        <div class="nav-right">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="profile-main">
+        <!-- Profile Header -->
+        <section class="profile-header">
+            <div class="profile-cover"></div>
+            <div class="profile-info-container">
+                <div class="avatar-section">
+                    <div class="avatar-wrapper">
+                        <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+                        <button class="change-avatar-btn" onclick="changeAvatar()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="avatarInput" accept="image/*" hidden onchange="handleAvatarChange(event)">
+                </div>
+                <div class="user-info">
+                    <h1 id="userName">Loading...</h1>
+                    <p id="userEmail">loading@example.com</p>
+                    <div class="subscription-badge" id="subscriptionBadge">
+                        <i class="fas fa-crown"></i>
+                        <span>Free</span>
+                    </div>
+                    <p class="member-since">Member since <span id="memberSince">2024</span></p>
+                </div>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <span class="stat-number" id="quickMovies">0</span>
+                        <span class="stat-label">Movies</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-number" id="quickShows">0</span>
+                        <span class="stat-label">TV Shows</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-number" id="quickHours">0</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Tabs -->
+        <section class="profile-tabs-container">
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Overview</span>
+                </button>
+                <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
+                    <i class="fas fa-history"></i>
+                    <span>Watch History</span>
+                </button>
+                <button class="tab-btn" data-tab="mylist" onclick="switchTab('mylist')">
+                    <i class="fas fa-bookmark"></i>
+                    <span>My List</span>
+                </button>
+                <button class="tab-btn" data-tab="achievements" onclick="switchTab('achievements')">
+                    <i class="fas fa-trophy"></i>
+                    <span>Achievements</span>
+                </button>
+                <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Tab Contents -->
+        <section class="tab-contents">
+            
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="overview-tab">
+                <div class="overview-grid">
+                    <!-- Watch Statistics -->
+                    <div class="stats-card large">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> Watch Statistics</h3>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon movies">
+                                    <i class="fas fa-film"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="totalMovies">0</span>
+                                    <span class="stat-name">Movies Watched</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon shows">
+                                    <i class="fas fa-tv"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="totalShows">0</span>
+                                    <span class="stat-name">TV Episodes</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon time">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="totalTime">0h</span>
+                                    <span class="stat-name">Watch Time</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon streak">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="watchStreak">0</span>
+                                    <span class="stat-name">Day Streak</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Favorite Genres -->
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-heart"></i> Favorite Genres</h3>
+                        </div>
+                        <div class="genre-chart" id="genreChart">
+                            <p class="empty-state">Start watching to see your genre preferences!</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt"></i> Recent Activity</h3>
+                            <a href="#" onclick="switchTab('history')">View All</a>
+                        </div>
+                        <div class="recent-activity" id="recentActivity">
+                            <p class="empty-state">No recent activity</p>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Preview -->
+                    <div class="stats-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-medal"></i> Recent Achievements</h3>
+                            <a href="#" onclick="switchTab('achievements')">View All</a>
+                        </div>
+                        <div class="achievements-preview" id="achievementsPreview">
+                            <p class="empty-state">No achievements yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Watch History Tab -->
+            <div class="tab-content" id="history-tab">
+                <div class="content-header">
+                    <h2>Watch History</h2>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
+                        </div>
+                        <button class="btn-danger" onclick="clearHistory()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading history...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My List Tab -->
+            <div class="tab-content" id="mylist-tab">
+                <div class="content-header">
+                    <h2>My List</h2>
+                    <div class="header-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn active" onclick="setListView('grid')">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" onclick="setListView('list')">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-list-grid" id="myListGrid">
+                    <div class="empty-state-large">
+                        <i class="fas fa-bookmark"></i>
+                        <h3>Your list is empty</h3>
+                        <p>Add movies and shows to watch later</p>
+                        <a href="index.html" class="btn-primary">Browse Content</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Tab -->
+            <div class="tab-content" id="achievements-tab">
+                <div class="content-header">
+                    <h2>Achievements</h2>
+                    <div class="achievement-progress">
+                        <span id="achievementCount">0/10</span> Unlocked
+                    </div>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings-tab">
+                <div class="settings-container">
+                    <!-- Account Settings -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-user"></i> Account</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Username</label>
+                                <input type="text" id="settingUsername" placeholder="Username">
+                            </div>
+                            <div class="setting-item">
+                                <label>Email</label>
+                                <input type="email" id="settingEmail" placeholder="Email">
+                            </div>
+                            <button class="btn-primary" onclick="saveAccountSettings()">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password Settings -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-lock"></i> Change Password</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword" placeholder="Current password">
+                            </div>
+                            <div class="setting-item">
+                                <label>New Password</label>
+                                <input type="password" id="newPassword" placeholder="New password">
+                            </div>
+                            <div class="setting-item">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                            </div>
+                            <button class="btn-primary" onclick="changePassword()">
+                                <i class="fas fa-key"></i> Update Password
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-sliders-h"></i> Preferences</h3>
+                        <div class="settings-group">
+                            <div class="setting-item toggle">
+                                <div class="setting-info">
+                                    <label>Dark Mode</label>
+                                    <p>Use dark theme across the app</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="darkModeToggle" checked onchange="toggleDarkMode()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item toggle">
+                                <div class="setting-info">
+                                    <label>Autoplay</label>
+                                    <p>Automatically play next episode</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoplayToggle" checked onchange="toggleAutoplay()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item toggle">
+                                <div class="setting-info">
+                                    <label>Notifications</label>
+                                    <p>Receive notifications for new releases</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="notificationsToggle" onchange="toggleNotifications()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Default Video Quality</label>
+                                <select id="qualitySelect" onchange="saveQualityPreference()">
+                                    <option value="auto">Auto</option>
+                                    <option value="4k">4K</option>
+                                    <option value="1080p">1080p</option>
+                                    <option value="720p">720p</option>
+                                    <option value="480p">480p</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Subtitle Language</label>
+                                <select id="subtitleSelect" onchange="saveSubtitlePreference()">
+                                    <option value="off">Off</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="pt">Portuguese</option>
+                                    <option value="ar">Arabic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data & Privacy -->
+                    <div class="settings-section">
+                        <h3><i class="fas fa-shield-alt"></i> Data & Privacy</h3>
+                        <div class="settings-group">
+                            <div class="setting-item toggle">
+                                <div class="setting-info">
+                                    <label>Activity Tracking</label>
+                                    <p>Track your watching habits for recommendations</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="trackingToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <button class="btn-secondary" onclick="downloadData()">
+                                <i class="fas fa-download"></i> Download My Data
+                            </button>
+                            <button class="btn-danger" onclick="deleteAccount()">
+                                <i class="fas fa-user-times"></i> Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Avatar Modal -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-backdrop" onclick="closeAvatarModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Choose Avatar</h3>
+                <button onclick="closeAvatarModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="avatar-grid" id="avatarGrid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/profile.js"></script>
+</body>
+</html>

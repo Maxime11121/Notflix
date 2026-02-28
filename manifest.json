@@ -1,0 +1,8 @@
+{
+    "name": "NotFlix Ultra",
+    "short_name": "NotFlix",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#141414",
+    "theme_color": "#e50914"
+}
